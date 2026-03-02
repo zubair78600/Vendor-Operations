@@ -16,6 +16,7 @@
             --secondary-text: #888888;
             --accent-blue: #00d2ff;
             --accent-green: #00ffaa;
+            --accent-purple: #a855f7;
             --glass-bg: rgba(255, 255, 255, 0.02);
             --glass-border: rgba(255, 255, 255, 0.08);
             --card-inner-bg: rgba(255, 255, 255, 0.01);
@@ -33,6 +34,7 @@
             --secondary-text: #666666;
             --accent-blue: #007aff;
             --accent-green: #00a170;
+            --accent-purple: #7c3aed;
             --glass-bg: rgba(255, 255, 255, 0.7);
             --glass-border: rgba(0, 0, 0, 0.05);
             --card-inner-bg: rgba(0, 0, 0, 0.02);
@@ -274,6 +276,15 @@
             color: var(--secondary-text);
             text-transform: uppercase;
             letter-spacing: 2px;
+        }
+
+        .metric-purple .metric-value {
+            color: var(--accent-purple);
+            text-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+        }
+
+        .icon-purple {
+            color: var(--accent-purple);
         }
 
         .content-col {
@@ -596,6 +607,70 @@
                 <div class="visual-col" style="background-image: url('./media/quality.png');"></div>
             </div>
         </section>
+
+        <!-- Topic 3: QC Of Retouch Application Build -->
+        <section class="topic-section">
+            <div class="topic-card">
+                <div class="metric-col metric-purple">
+                    <div class="metric-value">10MB</div>
+                    <div class="metric-label">App Size</div>
+                </div>
+
+                <div class="content-col">
+                    <div class="topic-header">
+                        <i data-lucide="cpu" color="var(--accent-purple)"></i>
+                        <h2>QC Of Retouch Application Build</h2>
+                    </div>
+
+                    <div class="point-grid">
+                        <div class="point-item">
+                            <div class="point-icon icon-purple"><i data-lucide="code-2" size="20"></i></div>
+                            <div class="point-text">
+                                <strong>V1 (Py) to V3 (JS)</strong>
+                                <p>Migrated from Python to advanced JS for speed and features.</p>
+                            </div>
+                        </div>
+                        <div class="point-item">
+                            <div class="point-icon icon-purple"><i data-lucide="zap" size="20"></i></div>
+                            <div class="point-text">
+                                <strong>Target: 5000/Day</strong>
+                                <p>Doubled capacity with shortcuts and auto-next logic.</p>
+                            </div>
+                        </div>
+                        <div class="point-item">
+                            <div class="point-icon icon-purple"><i data-lucide="files" size="20"></i></div>
+                            <div class="point-text">
+                                <strong>10k File Smoothness</strong>
+                                <p>Seamless handling of large batches without lag or corruption.</p>
+                            </div>
+                        </div>
+                        <div class="point-item">
+                            <div class="point-icon icon-purple"><i data-lucide="flask-conical" size="20"></i></div>
+                            <div class="point-text">
+                                <strong>6 Months R&D</strong>
+                                <p>Strategic research to achieve ultra-lightweight performance.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-area">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <i data-lucide="gauge" size="18"></i>
+                                Application Load Efficiency
+                            </div>
+                        </div>
+                        <div class="chart-canvas-wrapper">
+                            <canvas id="buildChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visual-col"
+                    style="background-image: url('./media/hero.png'); filter: hue-rotate(240deg) brightness(0.6);">
+                </div>
+            </div>
+        </section>
     </div>
 
     <footer>
@@ -657,7 +732,7 @@
             }
         });
 
-        let slaChart, qualityChart;
+        let slaChart, qualityChart, buildChart;
 
         function updateCharts(isLight) {
             const blue = isLight ? '#007aff' : '#00d2ff';
@@ -676,6 +751,14 @@
             qualityChart.options = getCommonOptions(isLight);
             qualityChart.options.plugins.tooltip.bodyColor = green;
             qualityChart.update();
+
+            // Build Chart Update
+            const purple = isLight ? '#7c3aed' : '#a855f7';
+            buildChart.data.datasets[0].borderColor = purple;
+            buildChart.data.datasets[0].pointBackgroundColor = purple;
+            buildChart.options = getCommonOptions(isLight);
+            buildChart.options.plugins.tooltip.bodyColor = purple;
+            buildChart.update();
         }
 
         // Initialize SLA Chart
@@ -754,6 +837,53 @@
                 scales: {
                     ...getCommonOptions(false).scales,
                     y: { ...getCommonOptions(false).scales.y, min: 90, max: 100 }
+                }
+            }
+        });
+
+        // Initialize Build Chart
+        const bCtx = document.getElementById('buildChart').getContext('2d');
+        const bGradient = bCtx.createLinearGradient(0, 0, 0, 200);
+        bGradient.addColorStop(0, 'rgba(168, 85, 247, 0.2)');
+        bGradient.addColorStop(1, 'rgba(168, 85, 247, 0)');
+
+        buildChart = new Chart(bCtx, {
+            type: 'line',
+            data: {
+                labels: ['Py V1', 'Py V2', 'JS V3'],
+                datasets: [{
+                    label: 'Target Capacity',
+                    data: [1500, 2500, 5000],
+                    borderColor: '#a855f7',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#a855f7',
+                    pointBorderColor: '#fff',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: bGradient,
+                }]
+            },
+            options: {
+                ...getCommonOptions(false),
+                plugins: {
+                    ...getCommonOptions(false).plugins,
+                    tooltip: {
+                        ...getCommonOptions(false).plugins.tooltip,
+                        bodyColor: '#a855f7',
+                        callbacks: {
+                            label: (context) => ` Target: ${context.raw} files/day`
+                        }
+                    },
+                    datalabels: {
+                        ...getCommonOptions(false).plugins.datalabels,
+                        formatter: (value) => value
+                    }
+                },
+                scales: {
+                    ...getCommonOptions(false).scales,
+                    y: { ...getCommonOptions(false).scales.y, min: 1000, max: 6000 }
                 }
             }
         });
