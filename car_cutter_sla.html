@@ -7,6 +7,7 @@
     <title>Carcutter Vendors Operations | Dashboard</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <style>
         :root {
             /* Dark Mode (Default) */
@@ -19,7 +20,10 @@
             --glass-border: rgba(255, 255, 255, 0.08);
             --card-inner-bg: rgba(255, 255, 255, 0.01);
             --point-bg: rgba(255, 255, 255, 0.02);
+            --card-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.4);
+            --card-hover-shadow: 0 50px 100px -20px rgba(0, 210, 255, 0.15);
             --transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            --hero-overlay: linear-gradient(to bottom, rgba(5, 5, 5, 0.4), var(--bg-color));
         }
 
         body.light-mode {
@@ -33,6 +37,9 @@
             --glass-border: rgba(0, 0, 0, 0.05);
             --card-inner-bg: rgba(0, 0, 0, 0.02);
             --point-bg: rgba(0, 0, 0, 0.03);
+            --card-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+            --card-hover-shadow: 0 30px 60px -10px rgba(0, 122, 255, 0.1);
+            --hero-overlay: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.05) 70%, var(--bg-color));
         }
 
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
@@ -99,7 +106,7 @@
         /* Hero Section */
         .hero {
             position: relative;
-            height: 45vh;
+            height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -113,18 +120,17 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, rgba(5, 5, 5, 0.4), var(--bg-color)), url('./hero.png');
+            background: var(--hero-overlay), url('./media/hero.png');
             background-size: cover;
-            background-position: center;
-            filter: brightness(0.6);
+            background-position: center 30%;
+            filter: brightness(0.7);
             z-index: -1;
             animation: heroZoom 30s infinite alternate ease-in-out;
-            transition: filter 0.5s ease;
+            transition: var(--transition);
         }
 
         body.light-mode .hero-bg {
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), var(--bg-color)), url('./hero.png');
-            filter: brightness(0.9) contrast(1.1);
+            filter: brightness(1) contrast(1.05);
         }
 
         @keyframes heroZoom {
@@ -156,6 +162,12 @@
             letter-spacing: 2px;
             margin-bottom: 20px;
             animation: fadeInUp 0.8s ease-out;
+            backdrop-filter: blur(5px);
+        }
+
+        body.light-mode .badge {
+            background: rgba(0, 122, 255, 0.05);
+            border-color: rgba(0, 122, 255, 0.1);
         }
 
         /* Animated Heading */
@@ -171,6 +183,7 @@
             background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: textShimmer 4s linear infinite, fadeInUp 0.8s ease-out 0.2s both;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         body.light-mode .animated-heading {
@@ -178,6 +191,7 @@
             background-size: 200% auto;
             -webkit-background-clip: text;
             background-clip: text;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
         @keyframes textShimmer {
@@ -215,12 +229,14 @@
             border: 1px solid var(--glass-border);
             border-radius: 32px;
             overflow: hidden;
-            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.4);
-            transition: background-color 0.5s ease, box-shadow 0.5s ease;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
         }
 
-        body.light-mode .topic-card {
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+        .topic-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--card-hover-shadow);
+            border-color: var(--accent-blue);
         }
 
         .metric-col {
@@ -232,7 +248,7 @@
             background: rgba(0, 210, 255, 0.03);
             border-right: 1px solid var(--glass-border);
             text-align: center;
-            transition: background-color 0.5s ease;
+            transition: var(--transition);
         }
 
         .metric-value {
@@ -363,7 +379,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .chart-title {
@@ -377,7 +393,7 @@
 
         .chart-canvas-wrapper {
             position: relative;
-            height: 200px;
+            height: 220px;
             width: 100%;
         }
 
@@ -515,7 +531,7 @@
                     </div>
                 </div>
 
-                <div class="visual-col" style="background-image: url('./detail.png');"></div>
+                <div class="visual-col" style="background-image: url('./media/detail.png');"></div>
             </div>
         </section>
 
@@ -577,7 +593,7 @@
                     </div>
                 </div>
 
-                <div class="visual-col" style="background-image: url('./quality.png');"></div>
+                <div class="visual-col" style="background-image: url('./media/quality.png');"></div>
             </div>
         </section>
     </div>
@@ -588,6 +604,7 @@
 
     <script>
         lucide.createIcons();
+        Chart.register(ChartDataLabels);
 
         // Theme Toggle Logic
         const themeToggle = document.getElementById('themeToggle');
@@ -603,6 +620,9 @@
         const getCommonOptions = (isLight) => ({
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+                padding: { top: 30, bottom: 10 }
+            },
             plugins: {
                 legend: { display: false },
                 tooltip: {
@@ -614,6 +634,14 @@
                     borderWidth: 1,
                     displayColors: false,
                     titleFont: { weight: 'bold' }
+                },
+                datalabels: {
+                    align: 'top',
+                    anchor: 'end',
+                    color: isLight ? '#333' : '#fff',
+                    font: { weight: '800', size: 12 },
+                    formatter: (value) => value + '%',
+                    offset: 8
                 }
             },
             scales: {
