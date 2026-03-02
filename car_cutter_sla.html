@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carcutter Vendors Operations | Dashboard</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            /* Dark Mode (Default) */
+            --bg-color: #050505;
+            --text-color: #ffffff;
+            --secondary-text: #888888;
+            --accent-blue: #00d2ff;
+            --accent-green: #00ffaa;
+            --glass-bg: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --card-inner-bg: rgba(255, 255, 255, 0.01);
+            --point-bg: rgba(255, 255, 255, 0.02);
+            --transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        body.light-mode {
+            /* Light Mode */
+            --bg-color: #f8faff;
+            --text-color: #1a1a1a;
+            --secondary-text: #666666;
+            --accent-blue: #007aff;
+            --accent-green: #00a170;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.05);
+            --card-inner-bg: rgba(0, 0, 0, 0.02);
+            --point-bg: rgba(0, 0, 0, 0.03);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            line-height: 1.5;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 1000;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            border-color: var(--accent-blue);
+        }
+
+        .theme-toggle .sun {
+            display: none;
+            color: var(--accent-blue);
+        }
+
+        .theme-toggle .moon {
+            display: block;
+            color: var(--accent-blue);
+        }
+
+        body.light-mode .theme-toggle .sun {
+            display: block;
+        }
+
+        body.light-mode .theme-toggle .moon {
+            display: none;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 45vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(5, 5, 5, 0.4), var(--bg-color)), url('./hero.png');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.6);
+            z-index: -1;
+            animation: heroZoom 30s infinite alternate ease-in-out;
+            transition: filter 0.5s ease;
+        }
+
+        body.light-mode .hero-bg {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), var(--bg-color)), url('./hero.png');
+            filter: brightness(0.9) contrast(1.1);
+        }
+
+        @keyframes heroZoom {
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.1);
+            }
+        }
+
+        .hero-content {
+            z-index: 1;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            color: var(--accent-blue);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        /* Animated Heading */
+        .animated-heading {
+            font-size: clamp(2.5rem, 7vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            position: relative;
+            background: linear-gradient(90deg, #fff, var(--accent-blue), #fff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShimmer 4s linear infinite, fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        body.light-mode .animated-heading {
+            background: linear-gradient(90deg, #1a1a1a, var(--accent-blue), #1a1a1a);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        @keyframes textShimmer {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        /* Container & Cards */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px 20px 80px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+        }
+
+        .topic-section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .topic-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .topic-card {
+            display: grid;
+            grid-template-columns: 280px 1fr 340px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.4);
+            transition: background-color 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        body.light-mode .topic-card {
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-col {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 210, 255, 0.03);
+            border-right: 1px solid var(--glass-border);
+            text-align: center;
+            transition: background-color 0.5s ease;
+        }
+
+        .metric-value {
+            font-size: 5.5rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .metric-blue .metric-value {
+            color: var(--accent-blue);
+            text-shadow: 0 0 30px rgba(0, 210, 255, 0.4);
+        }
+
+        .metric-green .metric-value {
+            color: var(--accent-green);
+            text-shadow: 0 0 30px rgba(0, 255, 170, 0.4);
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--secondary-text);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .content-col {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .visual-col {
+            background-size: cover;
+            background-position: center;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .visual-col::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, rgba(5, 5, 5, 0.2), transparent 40%);
+        }
+
+        body.light-mode .visual-col::after {
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.2), transparent 40%);
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .topic-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .point-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .point-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 18px;
+            background: var(--point-bg);
+            border-radius: 20px;
+            border: 1px solid transparent;
+            transition: var(--transition);
+        }
+
+        .point-item:hover {
+            background: var(--glass-border);
+            transform: translateY(-4px);
+            border-color: var(--accent-blue);
+        }
+
+        .point-icon {
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            margin-top: 2px;
+        }
+
+        .icon-blue {
+            color: var(--accent-blue);
+        }
+
+        .icon-green {
+            color: var(--accent-green);
+        }
+
+        .point-text strong {
+            display: block;
+            color: var(--text-color);
+            margin-bottom: 2px;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .point-text p {
+            color: var(--secondary-text);
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        /* Chart Area */
+        .chart-area {
+            margin-top: 10px;
+            padding: 30px;
+            background: var(--card-inner-bg);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--secondary-text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-canvas-wrapper {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        footer {
+            padding: 60px 40px;
+            text-align: center;
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 1200px) {
+            .topic-card {
+                grid-template-columns: 200px 1fr;
+            }
+
+            .visual-col {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .topic-card {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-col {
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+                padding: 60px 40px;
+            }
+
+            .point-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .theme-toggle {
+                top: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="theme-toggle" id="themeToggle" title="Toggle Day/Night Mode">
+        <i data-lucide="moon" class="moon"></i>
+        <i data-lucide="sun" class="sun"></i>
+    </div>
+
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <div class="badge">
+                <i data-lucide="shield-check" size="14"></i>
+                Carcutter
+            </div>
+            <h1 class="animated-heading">Vendors Operations</h1>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Topic 1: SLA & Process -->
+        <section class="topic-section">
+            <div class="topic-card">
+                <div class="metric-col metric-blue">
+                    <div class="metric-value">98%</div>
+                    <div class="metric-label">SLA Efficiency</div>
+                </div>
+
+                <div class="content-col">
+                    <div class="topic-info-top">
+                        <div class="topic-header">
+                            <i data-lucide="zap" color="var(--accent-blue)"></i>
+                            <h2>SLA & Process Optimization</h2>
+                        </div>
+
+                        <div class="point-grid">
+                            <div class="point-item">
+                                <div class="point-icon icon-blue"><i data-lucide="target" size="20"></i></div>
+                                <div class="point-text">
+                                    <strong>Vendor KPIs</strong>
+                                    <p>Standardized performance expectations across ecosystem.</p>
+                                </div>
+                            </div>
+                            <div class="point-item">
+                                <div class="point-icon icon-blue"><i data-lucide="bar-chart-2" size="20"></i></div>
+                                <div class="point-text">
+                                    <strong>Daily Tracking</strong>
+                                    <p>Real-time workload monitoring and distribution.</p>
+                                </div>
+                            </div>
+                            <div class="point-item">
+                                <div class="point-icon icon-blue"><i data-lucide="layers" size="20"></i></div>
+                                <div class="point-text">
+                                    <strong>Live Insights</strong>
+                                    <p>Looker-integrated dashboards for instant visibility.</p>
+                                </div>
+                            </div>
+                            <div class="point-item">
+                                <div class="point-icon icon-blue"><i data-lucide="activity" size="20"></i></div>
+                                <div class="point-text">
+                                    <strong>Overflow Reallocation</strong>
+                                    <p>98% excess volume efficiently redistributed.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-area">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <i data-lucide="trending-up" size="18"></i>
+                                Retouch Delivery Growth
+                            </div>
+                        </div>
+                        <div class="chart-canvas-wrapper">
+                            <canvas id="slaChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visual-col" style="background-image: url('./detail.png');"></div>
+            </div>
+        </section>
+
+        <!-- Topic 2: Retouch Quality -->
+        <section class="topic-section">
+            <div class="topic-card">
+                <div class="metric-col metric-green">
+                    <div class="metric-value">98.8%</div>
+                    <div class="metric-label">Quality Index</div>
+                </div>
+
+                <div class="content-col">
+                    <div class="topic-header">
+                        <i data-lucide="check-circle-2" color="var(--accent-green)"></i>
+                        <h2>Retouch Quality Standards</h2>
+                    </div>
+
+                    <div class="point-grid">
+                        <div class="point-item">
+                            <div class="point-icon icon-green"><i data-lucide="message-square" size="20"></i></div>
+                            <div class="point-text">
+                                <strong>Feedback Loops</strong>
+                                <p>Weekly quality syncs and tag-wise error tracking.</p>
+                            </div>
+                        </div>
+                        <div class="point-item">
+                            <div class="point-icon icon-green"><i data-lucide="file-code" size="20"></i></div>
+                            <div class="point-text">
+                                <strong>PSD Reference</strong>
+                                <p>Standardized workflows ensuring 0 BG errors.</p>
+                            </div>
+                        </div>
+                        <div class="point-item">
+                            <div class="point-icon icon-green"><i data-lucide="clock" size="20"></i></div>
+                            <div class="point-text">
+                                <strong>Blunder Control</strong>
+                                <p>Guaranteeing correction within 30-minute window.</p>
+                            </div>
+                        </div>
+                        <div class="point-item">
+                            <div class="point-icon icon-green"><i data-lucide="award" size="20"></i></div>
+                            <div class="point-text">
+                                <strong>Clean Record</strong>
+                                <p>Zero Wrong BG and Zero Retouch client tickets.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-area">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <i data-lucide="line-chart" size="18"></i>
+                                Quality Index Progression
+                            </div>
+                        </div>
+                        <div class="chart-canvas-wrapper">
+                            <canvas id="qualityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visual-col" style="background-image: url('./quality.png');"></div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Carcutter Analytics | Vendors Operations Division</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            updateCharts(isLight);
+        });
+
+        // Common Chart Defaults
+        const getCommonOptions = (isLight) => ({
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(5, 5, 5, 0.9)',
+                    titleColor: isLight ? '#666' : '#888',
+                    bodyColor: isLight ? '#000' : '#fff',
+                    padding: 12,
+                    borderColor: isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.1)',
+                    borderWidth: 1,
+                    displayColors: false,
+                    titleFont: { weight: 'bold' }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grid: { color: isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                    ticks: { color: isLight ? '#999' : '#444', font: { size: 10, weight: 600 } }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: isLight ? '#666' : '#666', font: { size: 10, weight: 600 } }
+                }
+            }
+        });
+
+        let slaChart, qualityChart;
+
+        function updateCharts(isLight) {
+            const blue = isLight ? '#007aff' : '#00d2ff';
+            const green = isLight ? '#00a170' : '#00ffaa';
+
+            // SLA Chart Update
+            slaChart.data.datasets[0].borderColor = blue;
+            slaChart.data.datasets[0].pointBackgroundColor = blue;
+            slaChart.options = getCommonOptions(isLight);
+            slaChart.options.plugins.tooltip.bodyColor = blue;
+            slaChart.update();
+
+            // Quality Chart Update
+            qualityChart.data.datasets[0].borderColor = green;
+            qualityChart.data.datasets[0].pointBackgroundColor = green;
+            qualityChart.options = getCommonOptions(isLight);
+            qualityChart.options.plugins.tooltip.bodyColor = green;
+            qualityChart.update();
+        }
+
+        // Initialize SLA Chart
+        const slaCtx = document.getElementById('slaChart').getContext('2d');
+        const slaGradient = slaCtx.createLinearGradient(0, 0, 0, 200);
+        slaGradient.addColorStop(0, 'rgba(0, 210, 255, 0.2)');
+        slaGradient.addColorStop(1, 'rgba(0, 210, 255, 0)');
+
+        slaChart = new Chart(slaCtx, {
+            type: 'line',
+            data: {
+                labels: ['2024', '2025', '2026'],
+                datasets: [{
+                    data: [80, 96, 98],
+                    borderColor: '#00d2ff',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#00d2ff',
+                    pointBorderColor: '#fff',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: slaGradient,
+                }]
+            },
+            options: {
+                ...getCommonOptions(false),
+                plugins: {
+                    ...getCommonOptions(false).plugins,
+                    tooltip: {
+                        ...getCommonOptions(false).plugins.tooltip,
+                        bodyColor: '#00d2ff',
+                        callbacks: { label: (context) => ` SLA Performance: ${context.raw}%` }
+                    }
+                },
+                scales: {
+                    ...getCommonOptions(false).scales,
+                    y: { ...getCommonOptions(false).scales.y, min: 70, max: 100 }
+                }
+            }
+        });
+
+        // Initialize Quality Chart
+        const qCtx = document.getElementById('qualityChart').getContext('2d');
+        const qGradient = qCtx.createLinearGradient(0, 0, 0, 200);
+        qGradient.addColorStop(0, 'rgba(0, 255, 170, 0.2)');
+        qGradient.addColorStop(1, 'rgba(0, 255, 170, 0)');
+
+        qualityChart = new Chart(qCtx, {
+            type: 'line',
+            data: {
+                labels: ['2024', '2025', '2026'],
+                datasets: [{
+                    data: [93.9, 98.4, 98.8],
+                    borderColor: '#00ffaa',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#00ffaa',
+                    pointBorderColor: '#fff',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: qGradient,
+                }]
+            },
+            options: {
+                ...getCommonOptions(false),
+                plugins: {
+                    ...getCommonOptions(false).plugins,
+                    tooltip: {
+                        ...getCommonOptions(false).plugins.tooltip,
+                        bodyColor: '#00ffaa',
+                        callbacks: { label: (context) => ` Quality Index: ${context.raw}%` }
+                    }
+                },
+                scales: {
+                    ...getCommonOptions(false).scales,
+                    y: { ...getCommonOptions(false).scales.y, min: 90, max: 100 }
+                }
+            }
+        });
+
+        // Intersection Observer for staggered entry
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.topic-section').forEach(section => observer.observe(section));
+    </script>
+</body>
+
+</html>
