@@ -461,27 +461,100 @@
             }
         }
 
-        /* Slide-over Effect for Topic 3 */
+        /* Topic 3 Visual Column */
+        .metric-col.metric-purple {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .wave-container {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            background: var(--accent-purple);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+            z-index: 2;
+            transition: var(--transition);
+        }
+
+        .wave-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .metric-col:hover .wave-container {
+            transform: translateX(-50%) scale(1.1);
+            box-shadow: 0 0 50px rgba(168, 85, 247, 0.6);
+        }
+
+        /* Two-Stage Reveal: Card Expansion */
         .topic-card-expandable {
             position: relative;
         }
 
+        .topic-card-expandable.fully-expanded .content-col {
+            opacity: 0;
+            pointer-events: none;
+        }
+
         .topic-card-expandable .visual-col {
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            z-index: 5;
+        }
+
+        .topic-card-expandable.fully-expanded .visual-col {
             position: absolute;
             right: 0;
             top: 0;
-            width: 340px;
+            width: 100%;
             height: 100%;
-            z-index: 10;
-            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+            background-image: url('media/app_screenshot.png') !important;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: var(--bg-color);
             cursor: zoom-in;
-            border-left: 1px solid var(--glass-border);
+            border-left: none;
         }
 
-        .topic-card-expandable:hover .visual-col {
-            width: 100%;
-            background-color: var(--bg-color);
-            border-left: none;
+        .wave-ring {
+            position: absolute;
+            inset: -2px;
+            border: 2px solid var(--accent-purple);
+            border-radius: 50%;
+            animation: wavePulse 3s infinite cubic-bezier(0.2, 0.8, 0.2, 1);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .wave-ring:nth-child(2) {
+            animation-delay: 1s;
+        }
+
+        .wave-ring:nth-child(3) {
+            animation-delay: 2s;
+        }
+
+        @keyframes wavePulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: scale(3.5);
+                opacity: 0;
+            }
         }
 
         /* Lightbox Modal */
@@ -517,14 +590,248 @@
             transform: scale(1);
         }
 
-        .close-lightbox {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            color: #fff;
+        /* Workflow Link and Modal */
+        .workflow-link {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent-purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 8px 16px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 50px;
             cursor: pointer;
-            z-index: 2001;
+            transition: var(--transition);
+            background: rgba(168, 85, 247, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        .workflow-link:hover {
+            background: rgba(168, 85, 247, 0.1);
+            border-color: var(--accent-purple);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(168, 85, 247, 0.2);
+        }
+
+        .workflow-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            background: rgba(210, 214, 224, 0.97);
+            backdrop-filter: none;
+            padding: 20px;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .workflow-modal.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .workflow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1420px;
+            margin: 0 auto 12px;
+        }
+
+        .workflow-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1b3551;
+        }
+
+        .close-workflow {
+            width: 44px;
+            height: 44px;
+            background: #c7cfdd;
+            border: 1px solid #8c9bb2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: #1b3551;
+        }
+
+        .close-workflow:hover {
+            background: #b8c2d3;
+        }
+
+        /* --- Premium Neon Workflow System --- */
+        :root {
+            --neon-cyan: #00d2ff;
+            --neon-purple: #a855f7;
+            --neon-pink: #ec4899;
+            --flow-bg: rgba(15, 23, 42, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --node-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .mermaid-container {
+            background: #0f172a !important;
+            /* Deep dark background for neon contrast */
+            border-radius: 12px;
+            padding: 40px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--node-shadow);
+        }
+
+        .workflow-canvas {
+            position: relative;
+            width: 1000px;
+            height: 1300px;
+            margin: 0 auto;
+        }
+
+        /* SVG Glow & Paths */
+        .connector-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .connector-path {
+            fill: none;
+            stroke: url(#lineGradient);
+            stroke-width: 3px;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.4));
+            opacity: 0.6;
+        }
+
+        .pulse-path {
+            fill: none;
+            stroke: var(--neon-cyan);
+            stroke-width: 3px;
+            stroke-linecap: round;
+            stroke-dasharray: 10, 1000;
+            stroke-dashoffset: 0;
+            animation: pulse-flow 3s linear infinite;
+            filter: drop-shadow(0 0 8px var(--neon-cyan));
+            opacity: 0.9;
+        }
+
+        @keyframes pulse-flow {
+            to {
+                stroke-dashoffset: -1010;
+            }
+        }
+
+        /* Premium Glassmorphism Nodes */
+        .flow-node {
+            position: absolute;
+            z-index: 10;
+            transform: translate(-50%, -50%);
+            padding: 12px 24px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            color: #f8fafc;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: var(--node-shadow);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .flow-node:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+            transform: translate(-50%, -52%);
+        }
+
+        .flow-node.main {
+            background: rgba(168, 85, 247, 0.1);
+            border-color: rgba(168, 85, 247, 0.4);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.15);
+            font-weight: 700;
+            color: #e9d5ff;
+        }
+
+        .flow-node.decision {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translate(-50%, -50%) rotate(45deg);
+            border-radius: 16px;
+            background: rgba(0, 210, 255, 0.05);
+            border-color: rgba(0, 210, 255, 0.3);
+        }
+
+        .flow-node.decision span {
+            transform: rotate(-45deg);
+            font-size: 0.85rem;
+            color: #bae6fd;
+        }
+
+        .flow-node.action {
+            background: rgba(236, 72, 153, 0.1);
+            border-color: rgba(236, 72, 153, 0.4);
+            color: #fce7f3;
+        }
+
+        .flow-node.sub {
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #cbd5e1;
+        }
+
+        /* Observation Lists */
+        .obs-list {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .obs-item {
+            font-size: 0.75rem;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #94a3b8;
+            transition: all 0.2s ease;
+        }
+
+        .obs-item:hover {
+            background: rgba(0, 210, 255, 0.1);
+            color: var(--neon-cyan);
+            border-color: rgba(0, 210, 255, 0.3);
+        }
+
+        .node-label {
+            position: absolute;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            z-index: 5;
+            pointer-events: none;
+        }
+    </style>
     </style>
 </head>
 
@@ -676,9 +983,19 @@
         <!-- Topic 3: QC Of Retouch Application Build -->
         <section class="topic-section">
             <div class="topic-card topic-card-expandable" id="qcBuildCard">
-                <div class="metric-col metric-purple">
-                    <div class="metric-value">10MB</div>
-                    <div class="metric-label">App Size</div>
+                <div class="metric-col metric-purple" id="lightboxTrigger" style="cursor: pointer;">
+                    <div class="wave-container">
+                        <img src="media/QC Logo.png" alt="QC Logo">
+                        <div class="wave-ring"></div>
+                        <div class="wave-ring"></div>
+                        <div class="wave-ring"></div>
+                    </div>
+                    <div class="metric-value">5000</div>
+                    <div class="metric-label">Target / Day</div>
+                    <div class="workflow-link" id="openWorkflow">
+                        <i data-lucide="git-branch" size="14"></i>
+                        QC Workflow
+                    </div>
                 </div>
 
                 <div class="content-col">
@@ -696,10 +1013,10 @@
                             </div>
                         </div>
                         <div class="point-item">
-                            <div class="point-icon icon-purple"><i data-lucide="zap" size="20"></i></div>
+                            <div class="point-icon icon-purple"><i data-lucide="package-2" size="20"></i></div>
                             <div class="point-text">
-                                <strong>Target: 5000/Day</strong>
-                                <p>Doubled capacity with shortcuts and auto-next logic.</p>
+                                <strong>App Size: 10MB</strong>
+                                <p>Optimized build size for instant loading and efficiency.</p>
                             </div>
                         </div>
                         <div class="point-item">
@@ -712,8 +1029,8 @@
                         <div class="point-item">
                             <div class="point-icon icon-purple"><i data-lucide="flask-conical" size="20"></i></div>
                             <div class="point-text">
-                                <strong>6 Months R&D</strong>
-                                <p>Strategic research to achieve ultra-lightweight performance.</p>
+                                <strong>Target Growth</strong>
+                                <p>Achieved 5000+ daily capacity with JS auto-next logic.</p>
                             </div>
                         </div>
                     </div>
@@ -731,8 +1048,7 @@
                     </div>
                 </div>
 
-                <div class="visual-col" id="lightboxTrigger"
-                    style="background-image: url('media/app_screenshot.png'); background-size: contain; background-repeat: no-repeat; background-position: center;">
+                <div class="visual-col" style="background-image: url('media/qc_build_illustration.png');">
                 </div>
             </div>
         </section>
@@ -741,6 +1057,139 @@
     <div class="lightbox-modal" id="lightboxModal">
         <div class="close-lightbox"><i data-lucide="x" size="32"></i></div>
         <img src="media/app_screenshot.png" class="lightbox-content" alt="QC App Screenshot Full">
+    </div>
+
+    <div class="workflow-modal" id="workflowModal">
+        <div class="workflow-header">
+            <h2 class="workflow-title">QC Of Retouch Workflow</h2>
+            <div class="close-workflow" id="closeWorkflow"><i data-lucide="x" size="24"></i></div>
+        </div>
+        <div class="mermaid-container">
+            <div class="workflow-canvas">
+                <!-- SVG Overlay -->
+                <svg class="connector-svg" viewBox="0 0 1000 1300" preserveAspectRatio="none">
+                    <defs>
+                        <!-- Use userSpaceOnUse to ensure vertical/horizontal lines render correctly with gradients -->
+                        <linearGradient id="lineGradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="1300">
+                            <stop offset="0%" style="stop-color:var(--neon-purple);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--neon-cyan);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Main Trunk -->
+                    <path class="connector-path" d="M 500 50 L 500 120" />
+                    <path class="pulse-path" d="M 500 50 L 500 120" />
+
+                    <!-- Trunk to Decision Split (225px offset from center) -->
+                    <path class="connector-path" d="M 500 120 C 500 200, 275 200, 275 280" />
+                    <path class="connector-path" d="M 500 120 C 500 200, 725 200, 725 280" />
+
+                    <!-- QC Decision Branches (225px split) -->
+                    <path class="connector-path" d="M 275 280 C 50 280, 50 350, 50 420" />
+                    <path class="pulse-path" d="M 275 280 C 50 280, 50 350, 50 420" />
+                    <path class="connector-path" d="M 275 280 C 450 280, 450 630, 500 750" />
+                    <path class="pulse-path" d="M 275 280 C 450 280, 450 630, 500 750" />
+
+                    <!-- Retouch Obs Branches (225px split) -->
+                    <path class="connector-path" d="M 725 280 C 550 280, 550 630, 500 750" />
+                    <path class="pulse-path" d="M 725 280 C 550 280, 550 630, 500 750" />
+                    <path class="connector-path" d="M 725 280 C 950 280, 950 350, 950 420" />
+                    <path class="pulse-path" d="M 725 280 C 950 280, 950 350, 950 420" />
+
+                    <!-- Obs Lists Joining to Next Action -->
+                    <path class="connector-path" d="M 50 420 C 50 750, 500 750, 500 750" />
+                    <path class="connector-path" d="M 950 420 C 950 750, 500 750, 500 750" />
+
+                    <!-- Next Action to Three Branches -->
+                    <path class="connector-path" d="M 500 750 C 500 820, 250 820, 250 900" />
+                    <path class="connector-path" d="M 500 750 L 500 900" />
+                    <path class="pulse-path" d="M 500 750 L 500 900" />
+                    <path class="connector-path" d="M 500 750 C 500 820, 750 820, 750 900" />
+
+                    <!-- Branches to CSV Generate -->
+                    <path class="connector-path" d="M 250 900 C 250 980, 500 980, 500 1050" />
+                    <path class="connector-path" d="M 500 900 L 500 1050" />
+                    <path class="pulse-path" d="M 500 900 L 500 1050" />
+                    <path class="connector-path" d="M 750 900 C 750 980, 500 980, 500 1050" />
+
+                    <!-- CSV Generate to Final Split -->
+                    <path class="connector-path" d="M 500 1050 C 500 1120, 200 1120, 200 1250" />
+                    <path class="connector-path" d="M 500 1050 L 500 1250" />
+                    <path class="pulse-path" d="M 500 1050 L 500 1250" />
+                    <path class="connector-path" d="M 500 1050 C 500 1120, 800 1120, 800 1250" />
+                </svg>
+
+                <!-- Nodes -->
+                <div class="flow-node main" style="left: 50%; top: 50px;">QC Of Retouch</div>
+                <div class="flow-node" style="left: 50%; top: 120px;">Media: RAW + AR + Retouch</div>
+
+                <div class="node-label"
+                    style="left: 275px; top: 210px; transform: translateX(-50%); color: #f8fafc; text-shadow: 0 0 10px rgba(0,210,255,0.5);">
+                    QC Decision</div>
+                <div class="flow-node decision" style="left: 275px; top: 280px;"><span>QC Decision</span></div>
+
+                <div class="node-label"
+                    style="left: 725px; top: 210px; transform: translateX(-50%); color: #f8fafc; text-shadow: 0 0 10px rgba(0,210,255,0.5);">
+                    Retouch Observation</div>
+                <div class="flow-node decision" style="left: 725px; top: 280px;"><span>Retouch Obs</span></div>
+
+                <!-- Logical Pathways -->
+                <div class="node-label"
+                    style="left: 170px; top: 260px; transform: translate(-50%, -50%); color: var(--neon-cyan);">Right
+                </div>
+                <div class="flow-node"
+                    style="left: 50px; top: 420px; padding: 15px; background: rgba(0, 210, 255, 0.05); width: 220px;">
+                    <div
+                        style="font-size: 0.75rem; color: var(--neon-cyan); margin-bottom: 8px; font-weight: 700; text-transform: uppercase;">
+                        QC Observation</div>
+                    <div class="obs-list">
+                        <div class="obs-item">Outline</div>
+                        <div class="obs-item">Shadow</div>
+                        <div class="obs-item">Perspective</div>
+                        <div class="obs-item">License Plate</div>
+                        <div class="obs-item">Background</div>
+                        <div class="obs-item">Comment</div>
+                    </div>
+                </div>
+
+                <div class="node-label"
+                    style="left: 387px; top: 260px; transform: translate(-50%, -50%); color: #64748b;">Wrong</div>
+
+                <div class="node-label"
+                    style="left: 612px; top: 260px; transform: translate(-50%, -50%); color: #64748b;">Good</div>
+
+                <div class="node-label"
+                    style="left: 830px; top: 260px; transform: translate(-50%, -50%); color: var(--neon-cyan);">Bad
+                </div>
+                <div class="flow-node"
+                    style="left: 950px; top: 420px; padding: 15px; background: rgba(0, 210, 255, 0.05); width: 220px;">
+                    <div
+                        style="font-size: 0.75rem; color: var(--neon-cyan); margin-bottom: 8px; font-weight: 700; text-transform: uppercase;">
+                        Retouch Observation</div>
+                    <div class="obs-list">
+                        <div class="obs-item">Outline</div>
+                        <div class="obs-item">Shadow</div>
+                        <div class="obs-item">Perspective</div>
+                        <div class="obs-item">License Plate</div>
+                        <div class="obs-item">Background</div>
+                        <div class="obs-item">Comment</div>
+                    </div>
+                </div>
+
+                <div class="flow-node action" style="left: 50%; top: 750px;">Next Action</div>
+
+                <div class="flow-node sub" style="left: 250px; top: 900px;">Retake</div>
+                <div class="flow-node sub" style="left: 50% !important; top: 900px;">Retouch</div>
+                <div class="flow-node sub" style="left: 750px; top: 900px;">Ignore</div>
+
+                <div class="flow-node main" style="left: 50%; top: 1050px;">CSV Generate</div>
+
+                <!-- Final Split -->
+                <div class="flow-node sub" style="left: 200px; top: 1250px;">QC Decision - CV Team</div>
+                <div class="flow-node sub" style="left: 50% !important; top: 1250px;">Brief QC Team - Retake</div>
+                <div class="flow-node sub" style="left: 800px; top: 1250px;">Correction to Vendor - Retouch</div>
+            </div>
+        </div>
     </div>
 
     <footer>
@@ -969,25 +1418,67 @@
 
         document.querySelectorAll('.topic-section').forEach(section => observer.observe(section));
 
-        // Lightbox Logic
         const modal = document.getElementById('lightboxModal');
         const trigger = document.getElementById('lightboxTrigger');
         const closeBtn = document.querySelector('.close-lightbox');
+        const qcCard = document.getElementById('qcBuildCard');
+
+        const visualCol = qcCard.querySelector('.visual-col');
 
         const openModal = () => modal.classList.add('active');
         const closeModal = () => modal.classList.remove('active');
 
+        // Stage 1: Icon Click toggles card expansion
         trigger.addEventListener('click', (e) => {
-            if (window.innerWidth > 1200) { // Only on desktop expansion
+            e.stopPropagation();
+            qcCard.classList.toggle('fully-expanded');
+        });
+
+        // Stage 2: Image Click opens lightbox ONLY if expanded
+        visualCol.addEventListener('click', (e) => {
+            if (qcCard.classList.contains('fully-expanded')) {
                 openModal();
             }
         });
 
-        // For mobile/tablet where hover doesn't work well, allow direct click if visible
-        modal.addEventListener('click', closeModal);
+        // Workflow Modal Logic
+        const workflowModal = document.getElementById('workflowModal');
+        const openWorkflow = document.getElementById('openWorkflow');
+        const closeWorkflow = document.getElementById('closeWorkflow');
 
+
+
+        const openWorkflowModal = () => {
+            workflowModal.classList.add('active');
+            lucide.createIcons(); // Re-render icons if any in modal
+        };
+        const closeWorkflowModal = () => workflowModal.classList.remove('active');
+
+        openWorkflow.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openWorkflowModal();
+        });
+
+        closeWorkflow.addEventListener('click', closeWorkflowModal);
+        workflowModal.addEventListener('click', (e) => {
+            if (e.target === workflowModal) closeWorkflowModal();
+        });
+
+        const closeAll = () => {
+            closeModal();
+            closeWorkflowModal();
+            qcCard.classList.remove('fully-expanded');
+        };
+
+        // Consolidated Scroll & Global Exit Logic
+        window.addEventListener('scroll', () => {
+            if (modal.classList.contains('active')) closeModal();
+            if (workflowModal.classList.contains('active')) closeWorkflowModal();
+        });
+
+        modal.addEventListener('click', closeModal);
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
+            if (e.key === 'Escape') closeAll();
         });
     </script>
 </body>
