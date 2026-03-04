@@ -1893,11 +1893,6 @@
             openWorkflowModal();
         });
 
-        const workflowParams = new URLSearchParams(window.location.search);
-        if (workflowParams.get('view') === 'full' || workflowParams.get('workflow') === 'full') {
-            openWorkflowModal();
-        }
-
         closeWorkflow.addEventListener('click', closeWorkflowModal);
         workflowModal.addEventListener('click', (e) => {
             if (e.target === workflowModal) closeWorkflowModal();
